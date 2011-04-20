@@ -39,7 +39,7 @@ typedef NSInteger JRRestoreState;
 @property (assign) id<JRRestoreControllerDelegate> delegate;
 @property (assign) NSString *firmwareFilePath;
 @property (assign) NSString *firmwareVersion;
-@property (readonly) JRRestoreState currentState;
+@property (readonly) JRRestoreState currentState; 
 
 @end
 
