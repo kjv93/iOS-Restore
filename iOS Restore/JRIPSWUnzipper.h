@@ -31,7 +31,7 @@
 @protocol JRIPSWUnzipperDelegate <NSObject>
 
 @optional
-- (void)ipswUnzipperFailedToUnzip;
-- (void)ipswUnzipperFinishedUnzipping;
+- (void)ipswUnzipperFailedToUnzip:(JRIPSWUnzipper *)unzipper;
+- (void)ipswUnzipperFinishedUnzipping:(JRIPSWUnzipper *)unzipper;
 
 @end

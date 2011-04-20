@@ -41,20 +41,20 @@
     
     if(![archive UnzipOpenFile:_ipswPath]) {
         [archive release];
-        [self sendDelegateMessage:@selector(ipswUnzipperFailedToUnzip) withObject:nil];
+        [self sendDelegateMessage:@selector(ipswUnzipperFailedToUnzip:) withObject:self];
         return;
     }
     
     if(![archive UnzipFileTo:_inflationPath overWrite:YES]) {
         [archive UnzipCloseFile];
         [archive release];
-        [self sendDelegateMessage:@selector(ipswUnzipperFailedToUnzip) withObject:nil];
+        [self sendDelegateMessage:@selector(ipswUnzipperFailedToUnzip:) withObject:self];
         return;
     }
     
     [archive UnzipCloseFile];
     [archive release];
-    [self sendDelegateMessage:@selector(ipswUnzipperFinishedUnzipping) withObject:nil];
+    [self sendDelegateMessage:@selector(ipswUnzipperFinishedUnzipping:) withObject:self];
     
     [pool release];
 }

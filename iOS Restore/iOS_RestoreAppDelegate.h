@@ -13,19 +13,22 @@
 #import "JRIPSWUnzipper.h"
 
 
-@interface iOS_RestoreAppDelegate : NSObject <NSApplicationDelegate, MDListener, NSTabViewDelegate, JRFWServerManifestGrabberDelegate, JRIPSWUnzipperDelegate> {
+@interface iOS_RestoreAppDelegate : NSObject <NSApplicationDelegate, MDListener, NSTabViewDelegate, JRFWServerManifestGrabberDelegate, JRIPSWUnzipperDelegate, NSTextFieldDelegate, NSOpenSavePanelDelegate> {
 @private
     NSWindow *window;
     NSImageView *statusOrbView;
-    IBOutlet NSTextField *connectedDeviceLabel;
+    IBOutlet NSTextField *connectedDeviceLabel, *localIPSWPathField, *statusLabel;
     IBOutlet NSPanel *serverDownloadSheet;
     BOOL downloadedServerInfo;
-    IBOutlet NSProgressIndicator *serverDownloadBar;
+    IBOutlet NSProgressIndicator *serverDownloadBar, *restoreProgressBar;
     JRFWServerManifestGrabber *manifestGrabber;
     IBOutlet NSPopUpButton *serverFWChoiceButton;
     IBOutlet NSTabView *restoreTypeTabView;
     NSDictionary *_currentServerManifest;
     IBOutlet NSButton *almightyRestoreButton;
+    NSInteger selectedTab;
+   // NSPoint replacementLabelPosition;
+    IBOutlet NSView *mainView;
 }
 
 - (void)updateDeviceLabelForDetachedDevice;
@@ -35,6 +38,8 @@
 - (IBAction)browseForIPSW:(id)sender;
 - (IBAction)serverFirmwareSelectionChange:(id)sender;
 - (IBAction)attemptRestore:(id)sender;
+
+- (void)resizeWindowForRestore:(BOOL)restore;
 
 @property (assign) IBOutlet NSWindow *window;
 @property (assign) IBOutlet NSImageView *statusOrbView;

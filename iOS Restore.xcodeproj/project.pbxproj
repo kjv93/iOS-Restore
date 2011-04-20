@@ -204,19 +204,43 @@
 		521B7D281358F33900CA95E8 /* Other */ = {
 			isa = PBXGroup;
 			children = (
-				52F12270135949E200F3C1B9 /* JRRestoreController.h */,
-				52F12271135949E200F3C1B9 /* JRRestoreController.m */,
+				52612E0F135E17380040E6F2 /* Restoration */,
+				52612E0D135E17150040E6F2 /* Device Management */,
+			);
+			name = Other;
+			sourceTree = "<group>";
+		};
+		52612E0D135E17150040E6F2 /* Device Management */ = {
+			isa = PBXGroup;
+			children = (
 				52BB6A301358FD8B004BB32C /* MDListener.h */,
 				52BB6A2C1358FD5B004BB32C /* MDNotificationCenter.h */,
 				52BB6A2D1358FD5B004BB32C /* MDNotificationCenter.m */,
-				52F1227C135A3D1300F3C1B9 /* JRFWServerManifestGrabber.h */,
-				52F1227D135A3D1400F3C1B9 /* JRFWServerManifestGrabber.m */,
 				52555346135ACB300073E882 /* MDDeviceManager.h */,
 				52555347135ACB300073E882 /* MDDeviceManager.m */,
+			);
+			name = "Device Management";
+			sourceTree = "<group>";
+		};
+		52612E0F135E17380040E6F2 /* Restoration */ = {
+			isa = PBXGroup;
+			children = (
+				52F12270135949E200F3C1B9 /* JRRestoreController.h */,
+				52F12271135949E200F3C1B9 /* JRRestoreController.m */,
+				52F1227C135A3D1300F3C1B9 /* JRFWServerManifestGrabber.h */,
+				52F1227D135A3D1400F3C1B9 /* JRFWServerManifestGrabber.m */,
 				52B3EB31135B7B9D00FB33C5 /* JRIPSWUnzipper.h */,
 				52B3EB32135B7B9D00FB33C5 /* JRIPSWUnzipper.m */,
+				52612E10135E73B20040E6F2 /* Operations */,
 			);
-			name = Other;
+			name = Restoration;
+			sourceTree = "<group>";
+		};
+		52612E10135E73B20040E6F2 /* Operations */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Operations;
 			sourceTree = "<group>";
 		};
 		52A1E7B8135B8C56005ECD31 /* ZipArchive */ = {

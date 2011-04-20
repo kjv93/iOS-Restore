@@ -24,15 +24,29 @@ static NSImage *greenOrbImage = nil;
     redOrbImage = [[NSImage imageNamed:@"red-orb.png"] retain];
     greenOrbImage = [[NSImage imageNamed:@"green-orb.png"] retain];
     
+    selectedTab = 0;
+    
     downloadedServerInfo = NO;
     [almightyRestoreButton setEnabled:NO];
     
     [connectedDeviceLabel setStringValue:@"No Device Connected"];
     
+   // replacementLabelPosition = [connectedDeviceLabel frame].origin;
+    
+    statusLabel = [[NSTextField alloc] initWithFrame:NSMakeRect([restoreProgressBar frame].origin.x, [restoreProgressBar frame].origin.y + [restoreProgressBar frame].size.height + [connectedDeviceLabel frame].size.height + 65, 250, [connectedDeviceLabel frame].size.height + 3)];
+    [statusLabel setBackgroundColor:[NSColor clearColor]];
+    [statusLabel setBordered:NO];
+    [statusLabel setEditable:NO];
+    
+    [localIPSWPathField setDelegate:self];
+    
     [window setContentBorderThickness:25.0 forEdge:NSMinYEdge];
     [window setMovableByWindowBackground:YES];
     
     [statusOrbView setImage:redOrbImage];
+    
+    [restoreProgressBar setMinValue:0];
+    [restoreProgressBar setMaxValue:100.0];
     
     manifestGrabber = [[JRFWServerManifestGrabber alloc] init];
     manifestGrabber.delegate = self;
@@ -60,7 +74,7 @@ static NSImage *greenOrbImage = nil;
     
     [self populateServerFirmwarePopupBox];
     
-    switch([restoreTypeTabView indexOfTabViewItem:[restoreTypeTabView selectedTabViewItem]]) {
+    switch(selectedTab) {
         case 1: {
             if([[[serverFWChoiceButton itemAtIndex:0] title] isEqualToString:@"None Available"])
                 [almightyRestoreButton setEnabled:NO];
@@ -112,17 +126,23 @@ static NSImage *greenOrbImage = nil;
 }
 
 - (void)tabView:(NSTabView *)tabView didSelectTabViewItem:(NSTabViewItem *)tabViewItem {
-    NSInteger tabIndex = [tabView indexOfTabViewItem:tabViewItem];
+    selectedTab = [tabView indexOfTabViewItem:tabViewItem];
     
-    if(tabIndex == 0) {
-        // for now
-        [almightyRestoreButton setEnabled:NO];
-    } else if(tabIndex == 1) {
+    if(selectedTab == 0) {
+        if([[NSFileManager defaultManager] fileExistsAtPath:[localIPSWPathField stringValue]] 
+           && [[MDDeviceManager sharedInstance] currentDeviceType] != NULL)
+            [almightyRestoreButton setEnabled:YES];
+        else
+            [almightyRestoreButton setEnabled:NO];
+    } else if(selectedTab == 1) {
         if(!downloadedServerInfo) {
             [NSApp beginSheet:serverDownloadSheet modalForWindow:window modalDelegate:self didEndSelector:@selector(sheetDidEnd:returnCode:contextInfo:) contextInfo:NULL];
             [serverDownloadBar startAnimation:self];
-            [manifestGrabber performSelector:@selector(beginGrabbing) withObject:nil afterDelay:1.0];
-
+            [manifestGrabber performSelector:@selector(beginGrabbing) withObject:nil afterDelay:0.0];
+        } else {
+            if(![[[restoreTypeTabView selectedTabViewItem] label] isEqualToString:@"None Available"] && [[MDDeviceManager sharedInstance] currentDeviceType] != NULL) {
+                [almightyRestoreButton setEnabled:YES];
+            }
         }
     }
 }
@@ -142,7 +162,7 @@ static NSImage *greenOrbImage = nil;
         [serverFWChoiceButton addItemWithTitle:firmwareVersion];
     }
     
-    if([restoreTypeTabView indexOfTabViewItem:[restoreTypeTabView selectedTabViewItem]] == 1) {
+    if(selectedTab == 1) {
         [almightyRestoreButton setEnabled:YES];
     }
 }
@@ -171,16 +191,37 @@ static NSImage *greenOrbImage = nil;
     [browser setAllowsMultipleSelection:NO];
     [browser setAllowedFileTypes:[NSArray arrayWithObject:@"ipsw"]];
     [browser setAllowsOtherFileTypes:NO];
-    [browser setPrompt:@"Restore"];
     [browser setCanChooseFiles:YES];
     [browser setTitle:@"Please choose the firmware file you wish to restore to."];
     [browser setDirectoryURL:[NSURL URLWithString:NSHomeDirectory()]];
+    [browser setDelegate:self];
     
-    [NSApp runModalForWindow:browser];
+    [browser beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
+        if(result != NSOKButton)
+            [localIPSWPathField setStringValue:nil];
+        else {
+            if([[MDDeviceManager sharedInstance] currentDeviceType] != NULL)
+                [almightyRestoreButton setEnabled:YES];
+        }
+    }];
+}
+
+- (BOOL)panel:(id)sender validateURL:(NSURL *)url error:(NSError **)outError {
+    [localIPSWPathField setStringValue:[url relativePath]];
+    
+    return YES;
 }
 
 - (IBAction)attemptRestore:(id)sender {
-    // first step, unzip 
+    // first step, unzip. NO. check for our own errors and animate window
+    
+    if(selectedTab == 0) {
+        if(![[NSFileManager defaultManager] fileExistsAtPath:[localIPSWPathField stringValue]]) {
+            NSBeginAlertSheet(@"File Not Found", @"OK", nil, nil, nil, nil, nil, nil, NULL, @"The firmware file could not be found");
+        }
+    }
+    
+    [self resizeWindowForRestore:YES];
 }
 
 - (IBAction)serverFirmwareSelectionChange:(id)sender {
@@ -188,10 +229,22 @@ static NSImage *greenOrbImage = nil;
         [almightyRestoreButton setEnabled:YES];
 }
 
+- (void)resizeWindowForRestore:(BOOL)restore {
+    NSInteger sizeDifference = 65;
+    
+    if(restore) {
+        [window setFrame:NSMakeRect([window frame].origin.x, [window frame].origin.y - sizeDifference, [window frame].size.width, [window frame].size.height + sizeDifference) display:YES animate:YES];
+        [mainView addSubview:statusLabel];
+        
+        [restoreProgressBar startAnimation:nil];
+    }
+}
+
 - (void)dealloc {
     [manifestGrabber release];
     [redOrbImage release];
     [greenOrbImage release];
+    [statusLabel release];
     
     [super dealloc];
 }
