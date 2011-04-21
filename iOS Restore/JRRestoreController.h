@@ -7,10 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "JRIPSWUnzipper.h"
-#import "MDListener.h"
-#import "JRIPSWUnzipper.h"
-
+#import "JRRestoreOperation.h"
+#import "MobileDevice.h"
 
 enum {
     kRestoreStateUnzippingIPSW = 0,
@@ -24,22 +22,26 @@ typedef NSInteger JRRestoreState;
 
 @protocol JRRestoreControllerDelegate;
 
-@interface JRRestoreController : NSObject <MDListener, JRIPSWUnzipperDelegate> {
+@interface JRRestoreController : NSObject <JRRestoreOperationDelegate> {
 @private
     id<JRRestoreControllerDelegate> _delegate;
-    BOOL _started;
-    NSString *_ipswLocation, *_version;
+    BOOL _started, _mustDownloadIPSW;
+    NSURL *_ipswLocation;
+    NSString *_version;
     JRRestoreState _currentState;
 }
 
 + (JRRestoreController *)sharedInstance;
 
-- (BOOL)beginRestoreProcess;
+- (BOOL)beginRestoreProcess; // only call if -started is NO
+- (void)cancel;
 
 @property (assign) id<JRRestoreControllerDelegate> delegate;
-@property (assign) NSString *firmwareFilePath;
+@property (assign) NSURL *firmwareLocation;
 @property (assign) NSString *firmwareVersion;
 @property (readonly) JRRestoreState currentState; 
+@property (readonly) BOOL started;
+@property (assign) BOOL mustDownloadIPSW;
 
 @end
 

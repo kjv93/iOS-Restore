@@ -67,5 +67,6 @@ typedef NSInteger AMDeviceMode;
 
 NSString *iOSRestoreGetDeviceConnectionType(uint16_t productID, uint32_t deviceID, BOOL isRestoreMode);
 APPLE_MOBILE_DEVICE *iOSRestoreGetDeviceType(uint16_t productID, uint32_t deviceID);
+NSString *iOSRestoreGetDeviceClassName(APPLE_MOBILE_DEVICE *deviceType);
 
 #endif /* DEVICEIDENTIFICATION_H */

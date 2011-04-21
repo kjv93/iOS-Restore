@@ -8,8 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-#define JRIPSWPreferredInflationDirectoryForFirmware(version) [NSString stringWithFormat:@"%@/%@", [@"~/Library/Caches/Cleanup At Startup" stringByExpandingTildeInPath], version]
-
+#define JRIPSWPreferredInflationDirectoryForFirmware [NSString stringWithFormat:@"%@/iOSRestoreRestoreBundle", [@"~/Library/Caches/Cleanup At Startup" stringByExpandingTildeInPath]]
 @protocol JRIPSWUnzipperDelegate;
 
 @interface JRIPSWUnzipper : NSObject {

@@ -7,22 +7,20 @@
 //
 
 #import "JRRestoreController.h"
+#import "MDDeviceManager.h"
+#import "MDNotificationCenter.h"
 
-
-@interface JRRestoreController (PrivateJellyBeans)
-
-- (void)_initiateUnzippingOfIPSW;
-
-@end
 
 @implementation JRRestoreController
 
 static JRRestoreController *sharedJRRestoreController = nil;
 
 @synthesize delegate=_delegate;
-@synthesize firmwareFilePath=_ipswLocation;
+@synthesize firmwareLocation=_ipswLocation;
 @synthesize firmwareVersion=_version;
 @synthesize currentState=_currentState;
+@synthesize started=_started;
+@synthesize mustDownloadIPSW=_mustDownloadIPSW;
 
 + (JRRestoreController *)sharedInstance {
     @synchronized(self) {
@@ -38,6 +36,8 @@ static JRRestoreController *sharedJRRestoreController = nil;
     self = [super init];
     if (self) {
         _started = NO;
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceAttached) name:MDNotificationDeviceAttached object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceDetached) name:MDNotificationDeviceDetached object:nil];
     }
     
     return self;
@@ -74,30 +74,30 @@ static JRRestoreController *sharedJRRestoreController = nil;
     [self sendDelegateMessage:@selector(restoreControllerBeganRestoring) withObject:nil];
     _started = YES;
     
-    [NSThread detachNewThreadSelector:@selector(_initiateUnzippingOfIPSW) toTarget:self withObject:nil];
+    [NSThread detachNewThreadSelector:@selector(_sortOutAndStart) toTarget:self withObject:nil];
     
     return YES;
 }
 
-- (void)_initiateUnzippingOfIPSW {
+- (void)deviceAttached {
+    
+}
+
+- (void)deviceDetached {
+    
+}
+
+- (void)cancel {
+    
+}
+
+- (void)_sortOutAndStart {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     
-    [self sendDelegateMessage:@selector(restoreControllerBeganRestoreOperationNamed:) withObject:@"Unzipping IPSW"];
+    // Really, we need to download the ipsw before anything.
     
-    JRIPSWUnzipper *unzipper = [[JRIPSWUnzipper alloc] initWithIPSWPath:_ipswLocation inflationPath:JRIPSWPreferredInflationDirectoryForFirmware(_version)];
-    
-    [unzipper setDelegate:self];
-    [unzipper beginUnzipping];
     
     [pool release];
-}
-
-- (void)ipswUnzipperFailedToUnzip:(JRIPSWUnzipper *)unzipper {
-    [self sendDelegateMessage:@selector(restoreControllerFailedToRestoreWithDescription:errorStatus:) withObject:@"Failed to unzip firmware file." anotherObject:(id)kAMStatusFailure];
-}
-
-- (void)ipswUnzipperFinishedUnzipping:(JRIPSWUnzipper *)unzipper {
-    [self sendDelegateMessage:<#(SEL)#> withObject:<#(id)#>];
 }
 
 - (void)dealloc {

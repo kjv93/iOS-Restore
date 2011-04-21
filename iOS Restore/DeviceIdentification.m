@@ -55,3 +55,15 @@ NSString *iOSRestoreGetDeviceConnectionType(uint16_t productID, uint32_t deviceI
     
     return [NSString stringWithFormat:@"%@: %@ Mode", deviceName, modeName];
 }
+
+NSString *iOSRestoreGetDeviceClassName(APPLE_MOBILE_DEVICE *deviceType) {
+    if(strstr(deviceType->model, "iPod") != NULL) {
+        return @"iPod";
+    } else if(strstr(deviceType->model, "iPhone") != NULL) {
+        return @"iPhone";
+    } else if(strstr(deviceType->model, "iPad") != NULL) {
+        return @"iPad";
+    }
+    
+    return @"Unknown";
+}

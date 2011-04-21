@@ -193,7 +193,10 @@ static NSImage *greenOrbImage = nil;
     [browser setAllowsOtherFileTypes:NO];
     [browser setCanChooseFiles:YES];
     [browser setTitle:@"Please choose the firmware file you wish to restore to."];
-    [browser setDirectoryURL:[NSURL URLWithString:NSHomeDirectory()]];
+    if([[MDDeviceManager sharedInstance] currentDeviceType] != NULL)
+        [browser setDirectoryURL:[NSURL URLWithString:[[[NSHomeDirectory() stringByAppendingPathComponent:@"Library"] stringByAppendingPathComponent:@"iTunes"] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@ Software Updates", iOSRestoreGetDeviceClassName([[MDDeviceManager sharedInstance] currentDeviceType])]]]];
+    else
+        [browser setDirectoryURL:[NSURL URLWithString:NSHomeDirectory()]];
     [browser setDelegate:self];
     
     [browser beginSheetModalForWindow:window completionHandler:^(NSInteger result) {

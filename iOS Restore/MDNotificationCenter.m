@@ -9,6 +9,8 @@
 #import "MDNotificationCenter.h"
 #import "MDDeviceManager.h"
 
+NSString *MDNotificationDeviceAttached = @"MDDeviceAttached";
+NSString *MDNotificationDeviceDetached = @"MDDeviceDetached";
 
 /* Callbacks */
 
@@ -156,10 +158,12 @@ static MDNotificationCenter *sharedMDNotificationCenter = nil;
 
 - (void)normalDeviceAttached:(AMDeviceRef)device {
     [self sendMessageToListeners:_cmd withDevice:device];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MDNotificationDeviceAttached object:nil];
 }
 
 - (void)normalDeviceDetached:(AMDeviceRef)device {
     [self sendMessageToListeners:_cmd withDevice:device];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MDNotificationDeviceDetached object:nil];
 }
 
 - (void)normalDeviceConnectionError {
@@ -168,26 +172,32 @@ static MDNotificationCenter *sharedMDNotificationCenter = nil;
 
 - (void)restoreDeviceAttached:(AMRestoreModeDeviceRef)device {
     [self sendMessageToListeners:_cmd withDevice:device];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MDNotificationDeviceAttached object:nil];
 }
 
 - (void)restoreDeviceDetached:(AMRestoreModeDeviceRef)device {
-    
+    [self sendMessageToListeners:@selector(_cmd) withDevice:device];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MDNotificationDeviceDetached object:nil];
 }
 
 - (void)recoveryDeviceAttached:(AMRecoveryModeDeviceRef)device {
     [self sendMessageToListeners:_cmd withDevice:device];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MDNotificationDeviceAttached object:nil];
 }
 
 - (void)recoveryDeviceDetached:(AMRecoveryModeDeviceRef)device {
     [self sendMessageToListeners:_cmd withDevice:device];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MDNotificationDeviceDetached object:nil];
 }
 
 - (void)dfuDeviceAttached:(AMDFUModeDeviceRef)device {
     [self sendMessageToListeners:_cmd withDevice:device];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MDNotificationDeviceAttached object:nil];
 }
 
 - (void)dfuDeviceDetached:(AMDFUModeDeviceRef)device {
     [self sendMessageToListeners:_cmd withDevice:device];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MDNotificationDeviceDetached object:nil];
 }
 
 @end

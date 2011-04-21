@@ -25,6 +25,9 @@
 		52A1E7CA135B8CAB005ECD31 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 52A1E7C5135B8CAB005ECD31 /* zip.c */; };
 		52A1E7CC135B8CD2005ECD31 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 52A1E7CB135B8CD2005ECD31 /* libz.dylib */; };
 		52B3EB33135B7B9D00FB33C5 /* JRIPSWUnzipper.m in Sources */ = {isa = PBXBuildFile; fileRef = 52B3EB32135B7B9D00FB33C5 /* JRIPSWUnzipper.m */; };
+		52BB2A1B1360CD530095B8A3 /* JRRestoreOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 52BB2A1A1360CD530095B8A3 /* JRRestoreOperation.m */; };
+		52BB2A1E1360D2FB0095B8A3 /* JRIPSWExtractionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 52BB2A1D1360D2FB0095B8A3 /* JRIPSWExtractionOperation.m */; };
+		52BB2A211360DC700095B8A3 /* JRIPSWDownloadOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 52BB2A201360DC700095B8A3 /* JRIPSWDownloadOperation.m */; };
 		52BB6A2E1358FD5B004BB32C /* MDNotificationCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 52BB6A2D1358FD5B004BB32C /* MDNotificationCenter.m */; };
 		52BB6A5C13592000004BB32C /* red-orb.png in Resources */ = {isa = PBXBuildFile; fileRef = 52BB6A5A13592000004BB32C /* red-orb.png */; };
 		52BB6A5D13592000004BB32C /* green-orb.png in Resources */ = {isa = PBXBuildFile; fileRef = 52BB6A5B13592000004BB32C /* green-orb.png */; };
@@ -66,6 +69,12 @@
 		52A1E7CB135B8CD2005ECD31 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		52B3EB31135B7B9D00FB33C5 /* JRIPSWUnzipper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JRIPSWUnzipper.h; sourceTree = "<group>"; };
 		52B3EB32135B7B9D00FB33C5 /* JRIPSWUnzipper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JRIPSWUnzipper.m; sourceTree = "<group>"; };
+		52BB2A191360CD530095B8A3 /* JRRestoreOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JRRestoreOperation.h; sourceTree = "<group>"; };
+		52BB2A1A1360CD530095B8A3 /* JRRestoreOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JRRestoreOperation.m; sourceTree = "<group>"; };
+		52BB2A1C1360D2FB0095B8A3 /* JRIPSWExtractionOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JRIPSWExtractionOperation.h; sourceTree = "<group>"; };
+		52BB2A1D1360D2FB0095B8A3 /* JRIPSWExtractionOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JRIPSWExtractionOperation.m; sourceTree = "<group>"; };
+		52BB2A1F1360DC700095B8A3 /* JRIPSWDownloadOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JRIPSWDownloadOperation.h; sourceTree = "<group>"; };
+		52BB2A201360DC700095B8A3 /* JRIPSWDownloadOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JRIPSWDownloadOperation.m; sourceTree = "<group>"; };
 		52BB6A2C1358FD5B004BB32C /* MDNotificationCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MDNotificationCenter.h; sourceTree = "<group>"; };
 		52BB6A2D1358FD5B004BB32C /* MDNotificationCenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MDNotificationCenter.m; sourceTree = "<group>"; };
 		52BB6A301358FD8B004BB32C /* MDListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MDListener.h; sourceTree = "<group>"; };
@@ -239,6 +248,12 @@
 		52612E10135E73B20040E6F2 /* Operations */ = {
 			isa = PBXGroup;
 			children = (
+				52BB2A191360CD530095B8A3 /* JRRestoreOperation.h */,
+				52BB2A1A1360CD530095B8A3 /* JRRestoreOperation.m */,
+				52BB2A1C1360D2FB0095B8A3 /* JRIPSWExtractionOperation.h */,
+				52BB2A1D1360D2FB0095B8A3 /* JRIPSWExtractionOperation.m */,
+				52BB2A1F1360DC700095B8A3 /* JRIPSWDownloadOperation.h */,
+				52BB2A201360DC700095B8A3 /* JRIPSWDownloadOperation.m */,
 			);
 			name = Operations;
 			sourceTree = "<group>";
@@ -359,6 +374,9 @@
 				52A1E7C8135B8CAB005ECD31 /* mztools.c in Sources */,
 				52A1E7C9135B8CAB005ECD31 /* unzip.c in Sources */,
 				52A1E7CA135B8CAB005ECD31 /* zip.c in Sources */,
+				52BB2A1B1360CD530095B8A3 /* JRRestoreOperation.m in Sources */,
+				52BB2A1E1360D2FB0095B8A3 /* JRIPSWExtractionOperation.m in Sources */,
+				52BB2A211360DC700095B8A3 /* JRIPSWDownloadOperation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
