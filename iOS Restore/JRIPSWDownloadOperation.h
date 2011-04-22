@@ -13,6 +13,10 @@
 @interface JRIPSWDownloadOperation : JRRestoreOperation {
 @private
     NSURL *_ipswURL;
+    long long _dlSize, _dlRecvd;
+    NSURLConnection *_download;
+    NSString *_filePath;
+    NSFileHandle *_fileHandle;
 }
 
 - (id)initWithDelegate:(id<JRRestoreOperationDelegate>)delegate ipswURL:(NSURL *)ipswURL;

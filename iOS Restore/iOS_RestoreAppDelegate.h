@@ -11,9 +11,10 @@
 #import "MDNotificationCenter.h"
 #import "JRFWServerManifestGrabber.h"
 #import "JRIPSWUnzipper.h"
+#import "JRRestoreController.h"
 
 
-@interface iOS_RestoreAppDelegate : NSObject <NSApplicationDelegate, MDListener, NSTabViewDelegate, JRFWServerManifestGrabberDelegate, JRIPSWUnzipperDelegate, NSTextFieldDelegate, NSOpenSavePanelDelegate> {
+@interface iOS_RestoreAppDelegate : NSObject <NSApplicationDelegate, MDListener, NSTabViewDelegate, JRFWServerManifestGrabberDelegate, JRIPSWUnzipperDelegate, NSTextFieldDelegate, NSOpenSavePanelDelegate, JRRestoreControllerDelegate> {
 @private
     NSWindow *window;
     NSImageView *statusOrbView;
@@ -29,6 +30,8 @@
     NSInteger selectedTab;
    // NSPoint replacementLabelPosition;
     IBOutlet NSView *mainView;
+    JRRestoreController *restoreController;
+    BOOL restoring;
 }
 
 - (void)updateDeviceLabelForDetachedDevice;

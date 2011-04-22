@@ -9,6 +9,8 @@
 #import "JRRestoreController.h"
 #import "MDDeviceManager.h"
 #import "MDNotificationCenter.h"
+#import "JRIPSWDownloadOperation.h"
+#import "JRIPSWExtractionOperation.h"
 
 
 @implementation JRRestoreController
@@ -38,6 +40,10 @@ static JRRestoreController *sharedJRRestoreController = nil;
         _started = NO;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceAttached) name:MDNotificationDeviceAttached object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceDetached) name:MDNotificationDeviceDetached object:nil];
+        
+        restoreQueue = [[NSOperationQueue alloc] init];
+        [restoreQueue setMaxConcurrentOperationCount:1];
+        _currentOperation = nil;
     }
     
     return self;
@@ -84,23 +90,73 @@ static JRRestoreController *sharedJRRestoreController = nil;
 }
 
 - (void)deviceDetached {
-    
+    switch(_currentState) {
+        case kRestoreStateDownloadingIPSW: {
+            [self sendDelegateMessage:@selector(restoreControllerFailedToRestoreWithDescription:) withObject:@"Device unplugged. Restore bailed out."];
+        } break;
+    }
 }
 
 - (void)cancel {
     
 }
 
+- (void)restoreOperationBegan:(id)restoreOperation {
+    [self sendDelegateMessage:@selector(restoreControllerBeganRestoreOperationNamed:isIndeterminate:) withObject:[_currentOperation statusString] anotherObject:(id)[_currentOperation isIndeterminateOperation]];
+}
+
+- (void)restoreOperation:(id)restoreOperation updatedToProgress:(CGFloat)progress {
+    if(_delegate && [_delegate respondsToSelector:@selector(restoreControllerIncreasedCurrentOperationProgress:)]) {
+        [_delegate restoreControllerIncreasedCurrentOperationProgress:progress];
+    }
+}
+
+- (void)restoreOperationFinished:(id)restoreOperation {
+    // start up the next one folks
+    [restoreOperation release];
+    
+    switch(_currentState) {
+        case kRestoreStateDownloadingIPSW: {
+            _currentState = kRestoreStateUnzippingIPSW;
+            
+            _currentOperation = [[JRIPSWExtractionOperation alloc] initWithDelegate:self ipswPath:[_ipswLocation relativePath]];
+            
+            [restoreQueue addOperation:_currentOperation];
+        } break;
+        case kRestoreStateUnzippingIPSW: {
+            [self sendDelegateMessage:@selector(restoreControllerCompletedRestoreSuccessfully) withObject:nil];
+        }
+    }
+}
+
+- (void)restoreOperation:(id)restoreOperation failedWithErrorDescription:(NSString *)errorDescription {
+    [restoreOperation release];
+    
+    [self sendDelegateMessage:@selector(restoreControllerFailedToRestoreWithDescription) withObject:errorDescription];
+}
+
 - (void)_sortOutAndStart {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     
-    // Really, we need to download the ipsw before anything.
-    
+    if(_mustDownloadIPSW) {
+        _currentState = kRestoreStateDownloadingIPSW;
+        
+        _currentOperation = [[JRIPSWDownloadOperation alloc] initWithDelegate:self ipswURL:_ipswLocation];
+        
+        [restoreQueue addOperation:_currentOperation];
+    } else {
+        _currentState = kRestoreStateUnzippingIPSW;
+        
+        _currentOperation = [[JRIPSWExtractionOperation alloc] initWithDelegate:self ipswPath:[_ipswLocation relativePath]];
+        
+        [restoreQueue addOperation:_currentOperation];
+    }
     
     [pool release];
 }
 
 - (void)dealloc {
+    [restoreQueue release];
     [super dealloc];
 }
 

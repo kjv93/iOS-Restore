@@ -42,17 +42,27 @@
     [self beginRestoreOperation];
 }
 
+- (void)cancel {
+    
+}
+
 - (void)beginRestoreOperation {
     // Subclasses override for functionality
 }
 
 - (void)updateProgress:(CGFloat)progress {
     _progress = progress;
-    [self sendDelegateMessage:@selector(restoreOperation:updatedToProgress:) withArg:self secondArg:(id)&_progress];
+    if(_delegate && [_delegate respondsToSelector:@selector(restoreOperation:updatedToProgress:)]) {
+        [_delegate restoreOperation:self updatedToProgress:_progress];
+    }
 }
 
 - (void)failWithErrorString:(NSString *)errStr {
     [self sendDelegateMessage:@selector(restoreOperation:failedWithErrorDescription:) withArg:self secondArg:errStr];
+}
+
+- (void)reportFinished {
+    [self sendDelegateMessage:@selector(restoreOperationFinished:) withArg:self secondArg:nil];
 }
 
 - (BOOL)isIndeterminateOperation {

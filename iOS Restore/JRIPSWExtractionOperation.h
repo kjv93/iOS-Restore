@@ -14,6 +14,7 @@
 @interface JRIPSWExtractionOperation : JRRestoreOperation <JRIPSWUnzipperDelegate> {
 @private
     NSString *_ipswPath;
+    BOOL _cancelled;
 }
 
 - (id)initWithDelegate:(id)delegate ipswPath:(NSString *)ipswPath;

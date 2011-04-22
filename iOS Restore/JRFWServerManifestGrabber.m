@@ -72,15 +72,17 @@
                 NSDictionary *firmwareEntry = [deviceEntry objectForKey:weirdValue];
                 
                 NSDictionary *restoreInfo = [firmwareEntry objectForKey:@"Restore"];
-                if(!restoreInfo)
-                    restoreInfo = [firmwareEntry objectForKey:@"PurchasedRestore"]; // Might have a legal issue here. Can be removed.
                 
                 BOOL isWantedEntry = (restoreInfo != nil);
                 
                 if(isWantedEntry) {
                     NSDictionary *existingEntry = [modelEntry objectForKey:[restoreInfo objectForKey:@"ProductVersion"]];
                     if(!existingEntry) {
-                        [modelEntry setObject:[NSDictionary dictionaryWithObjectsAndKeys:[restoreInfo objectForKey:@"BuildVersion"], @"Build", [restoreInfo objectForKey:@"FirmwareURL"], @"URL", nil] forKey:[restoreInfo objectForKey:@"ProductVersion"]];
+                        if([[[restoreInfo objectForKey:@"FirmwareURL"] substringWithRange:NSMakeRange(0, 3)] isEqualToString:@"ttp"]) {
+                            [(NSMutableDictionary *)restoreInfo setObject:[NSString stringWithFormat:@"h%@", [restoreInfo objectForKey:@"FirmwareURL"]] forKey:@"FirmwareURL"];
+                        }
+                        if([[restoreInfo objectForKey:@"FirmwareURL"] rangeOfString:@"protected://"].length == 0)
+                            [modelEntry setObject:[NSDictionary dictionaryWithObjectsAndKeys:[restoreInfo objectForKey:@"BuildVersion"], @"Build", [restoreInfo objectForKey:@"FirmwareURL"], @"URL", nil] forKey:[restoreInfo objectForKey:@"ProductVersion"]];
                     }
                 }
             }

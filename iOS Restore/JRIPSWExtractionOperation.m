@@ -17,6 +17,7 @@ static NSString *JRIPSWExtractionOperationErrorDescription = @"Failed to unzip f
     
     if((self = [super initWithDelegate:delegate]) != nil) {
         _ipswPath = [ipswPath copy];
+        _cancelled = NO;
     }
     
     return self;
@@ -31,8 +32,14 @@ static NSString *JRIPSWExtractionOperationErrorDescription = @"Failed to unzip f
     [unzipper beginUnzipping];
 }
 
+- (void)cancel {
+    _cancelled = YES;
+}
+
 - (void)ipswUnzipperFailedToUnzip:(JRIPSWUnzipper *)unzipper {
     [unzipper release];
+    
+    if(_cancelled) return;
     
     [self failWithErrorString:JRIPSWExtractionOperationErrorDescription];
 }
@@ -40,7 +47,9 @@ static NSString *JRIPSWExtractionOperationErrorDescription = @"Failed to unzip f
 - (void)ipswUnzipperFinishedUnzipping:(JRIPSWUnzipper *)unzipper {
     [unzipper release];
     
-    [self failWithErrorString:JRIPSWExtractionOperationErrorDescription];
+    if(_cancelled) return;
+    
+    [self reportFinished];
 }
 
 - (NSString *)statusString {

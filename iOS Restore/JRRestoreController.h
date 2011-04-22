@@ -16,7 +16,9 @@ enum {
     kRestoreStateWaitingForRestoreDevice = 2,
     kRestoreStateWaitingForRecoveryDevie = 3,
     kRestoreStateWaitingForDFUDevice = 4,
-    kRestoreStateSettingUpSignedFirmware = 5
+    kRestoreStateSettingUpSignedFirmware = 5,
+    kRestoreStateDownloadingIPSW = 6,
+    kRestoreStateRestoringDevice = 7
 };
 typedef NSInteger JRRestoreState;
 
@@ -29,6 +31,8 @@ typedef NSInteger JRRestoreState;
     NSURL *_ipswLocation;
     NSString *_version;
     JRRestoreState _currentState;
+    NSOperationQueue *restoreQueue;
+    id _currentOperation;
 }
 
 + (JRRestoreController *)sharedInstance;
@@ -37,7 +41,7 @@ typedef NSInteger JRRestoreState;
 - (void)cancel;
 
 @property (assign) id<JRRestoreControllerDelegate> delegate;
-@property (assign) NSURL *firmwareLocation;
+@property (retain) NSURL *firmwareLocation;
 @property (assign) NSString *firmwareVersion;
 @property (readonly) JRRestoreState currentState; 
 @property (readonly) BOOL started;
@@ -50,9 +54,9 @@ typedef NSInteger JRRestoreState;
 
 @optional
 - (void)restoreControllerBeganRestoring;
-- (void)restoreControllerFailedToRestoreWithDescription:(NSString *)description errorStatus:(AMStatus)errorStatus;
-- (void)restoreControllerBeganRestoreOperationNamed:(NSString *)operationName;
-- (void)restoreControllerIncreasedCurrentOperationProgress:(NSInteger)newProgress;
+- (void)restoreControllerFailedToRestoreWithDescription:(NSString *)description;
+- (void)restoreControllerBeganRestoreOperationNamed:(NSString *)operationName isIndeterminate:(BOOL)isIndetermindate;
+- (void)restoreControllerIncreasedCurrentOperationProgress:(CGFloat)newProgress;
 - (void)restoreControllerCompletedRestoreSuccessfully;
 
 @end

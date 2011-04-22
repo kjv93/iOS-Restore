@@ -21,7 +21,8 @@
 - (void)beginRestoreOperation; // Subclasses: use this instead of -start
 - (void)updateProgress:(CGFloat)progress; // Will send delegate message and update Ivar
 - (void)failWithErrorString:(NSString *)errStr; // Will send delegate message
-
+- (void)reportFinished; // Will send the delegate message
+- (void)cancel; // Emergencies only please :)
 - (BOOL)isIndeterminateOperation; // DEFAULT=YES; Subclasses: override this if your operation has displayable progress
 - (NSString *)statusString; // DEFAULT=@"Restoring..."; Subclasses: override for different text to be shown to the user when your operation is running
 
@@ -36,6 +37,7 @@
 @optional
 - (void)restoreOperationBegan:(id)restoreOperation;
 - (void)restoreOperation:(id)restoreOperation updatedToProgress:(CGFloat)progress;
+- (void)restoreOperationFinished:(id)restoreOperation;
 - (void)restoreOperation:(id)restoreOperation failedWithErrorDescription:(NSString *)errorDescription;
 
 @end

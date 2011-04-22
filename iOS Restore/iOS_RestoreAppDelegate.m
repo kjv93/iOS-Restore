@@ -28,12 +28,16 @@ static NSImage *greenOrbImage = nil;
     
     downloadedServerInfo = NO;
     [almightyRestoreButton setEnabled:NO];
+    restoring = NO;
+    
+    restoreController = [JRRestoreController sharedInstance];
+    restoreController.delegate = self;
     
     [connectedDeviceLabel setStringValue:@"No Device Connected"];
     
    // replacementLabelPosition = [connectedDeviceLabel frame].origin;
     
-    statusLabel = [[NSTextField alloc] initWithFrame:NSMakeRect([restoreProgressBar frame].origin.x, [restoreProgressBar frame].origin.y + [restoreProgressBar frame].size.height + [connectedDeviceLabel frame].size.height + 65, 250, [connectedDeviceLabel frame].size.height + 3)];
+    statusLabel = [[NSTextField alloc] initWithFrame:NSMakeRect([restoreProgressBar frame].origin.x, [restoreProgressBar frame].origin.y + [restoreProgressBar frame].size.height + [connectedDeviceLabel frame].size.height + 55, [window frame].size.width - 10, [connectedDeviceLabel frame].size.height + 3)];
     [statusLabel setBackgroundColor:[NSColor clearColor]];
     [statusLabel setBordered:NO];
     [statusLabel setEditable:NO];
@@ -203,8 +207,10 @@ static NSImage *greenOrbImage = nil;
         if(result != NSOKButton)
             [localIPSWPathField setStringValue:nil];
         else {
-            if([[MDDeviceManager sharedInstance] currentDeviceType] != NULL)
-                [almightyRestoreButton setEnabled:YES];
+            if([[MDDeviceManager sharedInstance] currentDeviceType] != NULL) {
+                if(!restoring) 
+                    [almightyRestoreButton setEnabled:YES];
+            }
         }
     }];
 }
@@ -222,9 +228,19 @@ static NSImage *greenOrbImage = nil;
         if(![[NSFileManager defaultManager] fileExistsAtPath:[localIPSWPathField stringValue]]) {
             NSBeginAlertSheet(@"File Not Found", @"OK", nil, nil, nil, nil, nil, nil, NULL, @"The firmware file could not be found");
         }
+        
+        // start local restore
+        restoreController.firmwareLocation = [NSURL URLWithString:[NSString stringWithFormat:@"file://%@", [localIPSWPathField stringValue]]];
+        restoreController.mustDownloadIPSW = NO;
+        restoreController.firmwareVersion = [[serverFWChoiceButton selectedItem] title];
+    } else if(selectedTab == 1) {
+        // download restore
+        restoreController.firmwareLocation = [NSURL URLWithString:[[[_currentServerManifest objectForKey:[NSString stringWithUTF8String:[[MDDeviceManager sharedInstance] currentDeviceType]->model]] objectForKey:[[serverFWChoiceButton selectedItem] title]] objectForKey:@"URL"]];
+        restoreController.mustDownloadIPSW = YES;
+        restoreController.firmwareVersion = [[serverFWChoiceButton selectedItem] title];
     }
     
-    [self resizeWindowForRestore:YES];
+    [restoreController beginRestoreProcess];
 }
 
 - (IBAction)serverFirmwareSelectionChange:(id)sender {
@@ -234,13 +250,52 @@ static NSImage *greenOrbImage = nil;
 
 - (void)resizeWindowForRestore:(BOOL)restore {
     NSInteger sizeDifference = 65;
+    restoring = restore;
     
     if(restore) {
         [window setFrame:NSMakeRect([window frame].origin.x, [window frame].origin.y - sizeDifference, [window frame].size.width, [window frame].size.height + sizeDifference) display:YES animate:YES];
         [mainView addSubview:statusLabel];
         
         [restoreProgressBar startAnimation:nil];
+        [almightyRestoreButton setEnabled:NO];
+    } else {
+        [window setFrame:NSMakeRect([window frame].origin.x, [window frame].origin.y + sizeDifference, [window frame].size.width, [window frame].size.height - sizeDifference) display:YES animate:YES];
+        [statusLabel removeFromSuperview];
+        
+        [restoreProgressBar stopAnimation:nil];
+        [almightyRestoreButton setEnabled:YES];
     }
+}
+
+- (void)restoreControllerBeganRestoring {
+    [self resizeWindowForRestore:YES];
+}
+
+- (void)restoreControllerFailedToRestoreWithDescription:(NSString *)description {
+    [self resizeWindowForRestore:NO];
+}
+
+- (void)restoreControllerBeganRestoreOperationNamed:(NSString *)operationName isIndeterminate:(BOOL)isIndetermindate {
+    [restoreProgressBar setIndeterminate:isIndetermindate];
+    [restoreProgressBar setDoubleValue:0.0];
+    
+   [statusLabel setStringValue:operationName];
+}
+
+- (void)restoreControllerIncreasedCurrentOperationProgress:(CGFloat)newProgress {
+   // [restoreProgressBar setDoubleValue:newProgress];
+    double currentProgress = [restoreProgressBar doubleValue];
+    int difference = (newProgress - currentProgress);
+    
+    for(int i=0;i<difference;++i) {
+        [restoreProgressBar incrementBy:1];
+    }
+    
+    [restoreProgressBar setDoubleValue:newProgress];
+}
+
+- (void)restoreControllerCompletedRestoreSuccessfully {
+    [self resizeWindowForRestore:NO];
 }
 
 - (void)dealloc {
